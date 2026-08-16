@@ -1,0 +1,7 @@
+
+convert curl to http client (guzzel)
+error handling 
+null safes ( handle null/undefined values) 
+
+fix the 'back' action actaully storing an instance in orders table
+
