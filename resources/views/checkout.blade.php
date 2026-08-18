@@ -19,15 +19,19 @@
        ?>
         <p>Price: {{$product->price}}</p>
        
-        Quantity : 
-        <input type="number" value="1" name="quantity"><br>
-        Currency :<br>
+        Quantity : <span> 1 </span> <br><br> 
+        {{-- <input type="number" value="1" name="quantity" disabled>
+       --}} 
+               Currency :<br>
         <select >
             <option name="currency" value="SAR">SAR</option>
             <option name="currency" value="jod">JOD</option>
             <option name="currency" value="usd">USD</option>
         </select>
-        <h3>Total: {{$product->price}} &nbsp;&nbsp;&nbsp;&nbsp;<sub>But its only the price</sub></h3>
+        <h3>Total: {{$product->price}} 
+            {{-- &nbsp;&nbsp;&nbsp;&nbsp;<sub>But its only the price</sub>
+         --}}
+        </h3>
 
         <h3>Customer Info :<br>
             Name : {{$user->name}}<br>

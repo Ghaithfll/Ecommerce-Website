@@ -8,4 +8,17 @@ class Product extends Model
 {
     //
     protected $guarded = [];
-}
+
+
+
+    public function Orders(){
+        
+        return $this->belongsToMany(Order::class);
+
+    }
+
+
+
+
+
+    }

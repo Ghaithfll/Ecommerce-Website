@@ -1,7 +1,15 @@
 
-convert curl to http client (guzzel)
-error handling 
-null safes ( handle null/undefined values) 
+convert curl to http client (guzzel)                Done
+error handling                                      Done            
+null safes ( handle null/undefined values)          Done
 
-fix the 'back' action actaully storing an instance in orders table
+fix the 'back' action actaully storing an instance in orders table  Done
+
+new:
+
+    create & store the order in the checkout page, even if the customer went back and re-opened the page
+        the page will access the SAME order just created
+    Order may have multiple products
+    fix the relationship between classes(models)    
+
 

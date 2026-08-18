@@ -5,13 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Orders</title>
+    <style>
+        table,th,td{
+            border:2px solid;
+        }
+    </style>
+
+
 </head>
 <body>
 <x-navbar/>
 
     <h1>All Orders :</h1>
-
 <table>
+    @if (count($orders)!=0)
+        
+    
+
  <tr>
     <th>Order ID</th>
     <th>Customer_ID</th>
@@ -21,6 +31,7 @@
     <th>Payment_ID</th>
     <th>Status</th>
  </tr>
+ @endif
  {{-- @foreach ($collection as $item)
      
  @endforeach --}}
@@ -37,7 +48,7 @@
 
 
      @empty
-        <p>No orders currently</p>
+        <h1>No orders currently</h1>
     @endforelse
 
 

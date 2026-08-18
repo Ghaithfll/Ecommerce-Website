@@ -16,14 +16,14 @@
     crossorigin="anonymous">
 </script>
 <form
-    action="{{ route('payment_result',['order' => $order,'checkoutId' => $checkoutId]) }}"
+    action="{{ route('payment_result',['checkoutId' => $checkoutId]) }}"
     class="paymentWidgets"
     data-brands="VISA MASTER AMEX">
 </form>
 
 
 @error('error')
-    <h1>ERRORRRRRRRRR</h1>    
+    
 <h2 style="color:red">{{$message}}</h2>
 
 @enderror

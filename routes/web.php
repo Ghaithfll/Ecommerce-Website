@@ -16,9 +16,9 @@ Route::get('/checkout/{product}',[ProductController::class,'checkout'])->name('c
 
 Route::post('/checkout/{product}',[ProductController::class,'checkout_submit']);
 
-Route::get('/payment/{order}',[ProductController::class,'payment_get'])->name('payment');
+Route::get('/payment',[ProductController::class,'payment_get'])->name('payment');
 //    should be '/payment/{order}'
-Route::get('paymentResult/{order}',[ProductController::class,'payment_result'])->name('payment_result');
+Route::get('paymentResult',[ProductController::class,'payment_result'])->name('payment_result');
 
 
 Route::get('/orders',function(){

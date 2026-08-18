@@ -85,44 +85,43 @@ class ProductController extends Controller
     public function checkout_submit(product $product)
     {
         try {
-        
-            $responseData  =   requestHyperpayCheckout($product); // this is copied from the hyperpay request()
-            
-            
-            // $order = new Order();
-            
-            // $order->amount =$product->price;
-            // $order->user_id =1;
-            // $order->product_id =$product->id;
-            // $order->currency =$product->currency;
-            // $order->status ='pending';
 
-            // session()->push(['order' => $order]);
-            // //dd($order);
-        
-            
-            $order = Order::create([
+            $responseData  =   requestHyperpayCheckout($product); // this is copied from the hyperpay request()
+
+
+
+            //session()->put('order' , $order);
+            session()->put('order', [
                 'amount' => $product->price,
-                'user_id' => 1,  //               user id is hardcoded
+                'user_id' => 1,
                 'product_id' => $product->id,
                 'currency' => $product->currency,
-                'status' => 'pending'
+                'status' => 'pending',
             ]);
-           // dd($order);
+            //dd($order);
+
+
+            // $order = Order::create([
+            //     'amount' => $product->price,
+            //     'user_id' => 1,  //               user id is hardcoded
+            //     'product_id' => $product->id,
+            //     'currency' => $product->currency,
+            //     'status' => 'pending'
+            // ]);
+            //dd($order);
             $responseData = json_decode($responseData);
-            if ($responseData!=null) {
-                
-            
-            return redirect()->route('payment', [
-                'order' => $order,
-                'integrity' => $responseData->integrity, // these 2 are NOT sent by the url (payment/{order}) 
-                'checkoutId' => $responseData->id, // so u should request them from the other function (payment_get)
-            ]);
+            if ($responseData != null) {
+
+
+                return redirect()->route('payment', [
+
+                    'integrity' => $responseData->integrity, // these 2 are NOT sent by the url (payment/{order}) 
+                    'checkoutId' => $responseData->id, // so u should request them from the other function (payment_get)
+                ]);
             }
             throw new Exception("Null Response");
-        } 
-        catch (Exception $err) {
-            Log::error("checkout Api failed",['error' => $err->getMessage()]);
+        } catch (Exception $err) {
+            Log::error("checkout Api failed", ['error' => $err->getMessage()]);
             return back()->withErrors(['error' => 'Prepare The Checkout Failed!, try again']);
         }
 
@@ -130,55 +129,67 @@ class ProductController extends Controller
 
 
     }
-    public function payment_get(Request $request, Order $order)
+    public function payment_get(Request $request)
     {
 
         $checkoutId = $request->checkoutId;
         $integrity = $request->integrity;
-       // dd("we r here now, PAYMENT GET");
-        return view('payment', ['order' => $order, 'checkoutId' => $checkoutId, 'integrity' => $integrity]);
+        // dd("we r here now, PAYMENT GET");
+        return view('payment', ['checkoutId' => $checkoutId, 'integrity' => $integrity]);
     }
 
-    public function payment_result(Order $order, Request $request)
+    public function payment_result(Request $request)
     {
-    
-    try{
-        
-        $checkoutId = $request['checkoutId'];
 
-        // request hyperpay api to get the result
-        //dd("checkoutID is : $request->checkoutId");
-        $responseData = json_decode(requestHyperpayResult($checkoutId));
-        // dd($responseData);
-        
-        if ($responseData == null) {
-            //dd("Null Api response while requesting the payment result");
-            throw new Exception("Null Api response while requesting the payment result");
+        try {
+
+            $checkoutId = $request['checkoutId'];
+
+            // request hyperpay api to get the result
+            //dd("checkoutID is : $request->checkoutId");
+            $responseData = json_decode(requestHyperpayResult($checkoutId));
+            
+            // dd($responseData);
+
+            if ($responseData == null) {
+                //dd("Null Api response while requesting the payment result");
+                throw new Exception("Null Api response while requesting the payment result");
+            }
+
+            // verify the currency,amount,ID
+
+            $paymentStatus = ExtractPatmentStatus($responseData->result->code);
+            // update the order status
+
+            //dd("Before redirecting, $paymentStatus");
+            $order = session()->get('order');
+            //dd($order);
+            $order['status'] = $paymentStatus;
+
+            //  dd("Unable to store the order",$responseData );
+            $order['payment_id'] = $responseData->id;
+
+            //$order->save(); // should here store the order
+            // $orders = Order::all();
+
+          //  dd($order);
+            $ord = Order::create([
+                'amount' => $order['amount'],
+                 'user_id' => $order['user_id'], 
+                 'product_id' => $order['product_id'],
+                 'currency' => $order['currency'],
+                 'status' => $order['status'],
+                 'payment_id' => $order['payment_id']
+            ]);
+
+            
+            return redirect()->route('orders');
+        } catch (Exception $err) {
+
+
+            Log::error('Payment Api Failed', ['error' => $err->getMessage()]);
+            return back()->withErrors(["error" => "we couldnt process your payment, please try again"]);
         }
-
-        // verify the currency,amount,ID
-
-        $paymentStatus = ExtractPatmentStatus($responseData->result->code);
-        // update the order status
-
-        //dd("Before redirecting, $paymentStatus");
-        $order->status = $paymentStatus;
-        
-      //  dd("Unable to store the order",$responseData );
-        $order->payment_id = $responseData->id;
-        
-        $order->save();// should here store the order
-        // $orders = Order::all();
-
-        
-        return redirect()->route('orders');
-    }
-    catch(Exception $err){
-
-    
-        Log::error('Payment Api Failed', ['error' => $err->getMessage()]);
-        return back()->withErrors(["error"=> "we couldnt process your payment, please try again"]);
-    }
     }
 }
 
@@ -186,7 +197,7 @@ function requestHyperpayCheckout(Product $product)
 {
 
     $url = "https://eu-test.oppwa.com/v1/checkouts";
-/*
+    /*
     //dd(number_format($product->price,2));
     $data =
         "entityId=8a8294174d0595bb014d05d829cb01cd" . // ur merchant id
@@ -212,12 +223,12 @@ function requestHyperpayCheckout(Product $product)
     }
     curl_close($ch);
     */
-   
+
     $responseData = Http::asForm()->withHeaders([
         'Authorization' => "Bearer OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o="
-    ])->post($url,[
+    ])->post($url, [
         'entityId' => '8a8294174d0595bb014d05d829cb01cd',
-        'amount'   => number_format($product->price,2),
+        'amount'   => number_format($product->price, 2),
         'currency' => 'EUR',
         'paymentType' => 'DB',
         'integrity' => true
@@ -228,17 +239,15 @@ function requestHyperpayCheckout(Product $product)
         $responseData->throw();
     }
 
-   
+
     return $responseData;
-
-
-    }
+}
 
 function requestHyperpayResult($checkoutId)
 {
     $url = "https://eu-test.oppwa.com/v1/checkouts/$checkoutId/payment";
-    $url .= "?entityId=8a8294174d0595bb014d05d829cb01cd";
-
+   // $url .= "?entityId=8a8294174d0595bb014d05d829cb01cd";
+/*
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -251,10 +260,18 @@ function requestHyperpayResult($checkoutId)
     if (curl_errno($ch)) {
         return curl_error($ch);
     }
-    curl_close($ch);
+    curl_close($ch);*/
+//****************************** */
+    $responseData = Http::withToken('OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o=')
+    ->withQueryParameters(['entityId'=>'8a8294174d0595bb014d05d829cb01cd'])
+    ->get($url);
 
     
-    return $responseData;
+    if ($responseData->failed()) {
+    dd($responseData->body());
+    $responseData->throw();
+    }
+    return $responseData->body();
 }
 
 function ExtractPatmentStatus($statusCode)
