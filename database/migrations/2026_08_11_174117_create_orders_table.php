@@ -18,7 +18,6 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete(); // customer name (user->name) and email as foreign key
-            $table->foreignIdFor(Product::class)->constrained()->cascadeOnDelete();
             $table->double('amount');
             $table->string('currency')->default('jod');
             $table->string('payment_id')->nullable();

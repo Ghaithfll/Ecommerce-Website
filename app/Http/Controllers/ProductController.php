@@ -143,11 +143,13 @@ class ProductController extends Controller
     {
 
         try {
-
+        
             $checkoutId = $request['checkoutId'];
 
             // request hyperpay api to get the result
             //dd("checkoutID is : $request->checkoutId");
+//dd("here");
+            
             $responseData = json_decode(requestHyperpayResult($checkoutId));
 
             // dd($responseData);
@@ -161,27 +163,33 @@ class ProductController extends Controller
 
             $paymentStatus = ExtractPatmentStatus($responseData->result->code);
             // update the order status
-
+            //dd('payment status: success','1');
             //dd("Before redirecting, $paymentStatus");
+            
+            //dd(session()->all());
             $order = session()->get('order');
+            //dd($order,session()->get('order'),'2');
+            $order = Order::findorFail($order['id']);
             //dd($order);
-            $order['status'] = $paymentStatus;
-
+            $order->status = $paymentStatus;
+            //dd('order status success');
             //  dd("Unable to store the order",$responseData );
-            $order['payment_id'] = $responseData->id;
+            $order->payment_id = $responseData->id;
 
-            //$order->save(); // should here store the order
+            $order->save(); // should here store the order
+            session()->forget('order');
+            
             // $orders = Order::all();
 
             //  dd($order);
-            $ord = Order::create([
-                'amount' => $order['amount'],
-                'user_id' => $order['user_id'],
-                'product_id' => $order['product_id'],
-                'currency' => $order['currency'],
-                'status' => $order['status'],
-                'payment_id' => $order['payment_id']
-            ]);
+            // $ord = Order::create([
+            //     'amount' => $order['amount'],
+            //     'user_id' => $order['user_id'],
+            //     'product_id' => $order['product_id'],
+            //     'currency' => $order['currency'],
+            //     'status' => $order['status'],
+            //     'payment_id' => $order['payment_id']
+            // ]);
 
 
             return redirect()->route('orders');
@@ -210,7 +218,7 @@ class ProductController extends Controller
 
     }
 
-function requestHyperpayCheckout(Product $product)
+function requestHyperpayCheckout($total)
 {
 
     $url = "https://eu-test.oppwa.com/v1/checkouts";
@@ -245,7 +253,7 @@ function requestHyperpayCheckout(Product $product)
         'Authorization' => "Bearer OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o="
     ])->post($url, [
         'entityId' => '8a8294174d0595bb014d05d829cb01cd',
-        'amount'   => number_format($product->price, 2),
+        'amount'   => number_format($total, 2),// total
         'currency' => 'EUR',
         'paymentType' => 'DB',
         'integrity' => true
@@ -285,7 +293,7 @@ function requestHyperpayResult($checkoutId)
 
 
     if ($responseData->failed()) {
-        dd($responseData->body());
+      //  dd($responseData->body(),'why is that?!');
         $responseData->throw();
     }
     return $responseData->body();

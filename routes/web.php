@@ -23,7 +23,7 @@ Route::get('paymentResult',[ProductController::class,'payment_result'])->name('p
 
 Route::get('cart',[cartController::class,'index'])->name('cart');
 
-Route::post('cart',[cartController::class,'submit_checkout']);
+Route::post('cart',[cartController::class,'submit_checkout'])->name('cart_submit');
 
 
 Route::get('cart/{product}',[cartController::class,'AddProduct'])->name('add_product_to_cart');

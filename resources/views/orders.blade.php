@@ -25,9 +25,7 @@
  <tr>
     <th>Order ID</th>
     <th>Customer_ID</th>
-    <th>Product_ID</th>
-    <th>Product_Name</th>
-    <th>Product_Price</th>
+    <th>Total_Price</th>
     <th>Payment_ID</th>
     <th>Status</th>
  </tr>
@@ -39,9 +37,7 @@
  <tr>
     <td>{{$order->id}}</td>
     <td>{{$order->user_id}}</td>
-    <td>{{$order->product_id}}</td>
-    <td>{{$order->product->name}}</td> {{-- i need the product obj to get its name here!! --}}
-    <td>{{$order->product->price}}</td>
+    <td>{{$order->amount}}</td>
     <td>{{$order->payment_id}}</td>
     <td>{{$order->status}}</td>
  </tr>
