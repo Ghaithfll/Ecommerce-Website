@@ -17,8 +17,9 @@
     <h3>{{$product->name}}</h3>
     <p>Description: {{$product->description}}</p>
     <p>{{$product->price}}</p><br>
-    <a href="{{route('checkout',['product' => $product])}}">
-    <button>Buy Now</button>
+    
+    <a href="{{route('add_product_to_cart',['product' => $product])}}">
+    <button>Add to Cart</button>
     </a>
 </div></a>
 </fieldset>

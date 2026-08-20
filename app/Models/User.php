@@ -22,6 +22,15 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
+
+    public function orders(){
+        return $this->hasMany(Order::class);
+    }
+
+     public function cart(){
+        return $this->hasOne(Order::class);
+    }
+    
     protected function casts(): array
     {
         return [

@@ -13,3 +13,15 @@ new:
     fix the relationship between classes(models)    
 
 
+
+
+    To Do:
+    - create AddProductToPivot($product) function (should be called in a foreach($products as $product))
+    - store the order_id in a session, if the user went back and re-opened the page that creates the order
+       it should check (is there an order already created in the session? yes!, then load that order/ No!, create the order)
+    - once the payment is finalyzed , delete the order from the session    
+    - prevent adding the same product multiple times to the cart
+
+    what if an order was created and the user never paid (the order still in the db)
+    
+     should the order be deleted after some amount of time?

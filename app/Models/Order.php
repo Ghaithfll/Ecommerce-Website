@@ -10,6 +10,10 @@ class Order extends Model
 
 
     public function products(){
-       return  $this->belongsToMany(Product::class);
+       return  $this->belongsToMany(Product::class,table:'order_product_pivot');// belongstomany = belongsto & hasmany 
+    }
+    public function user(){
+       return  $this->belongsTo(User::class);// belongstomany = belongsto & hasmany 
     }
 }
+

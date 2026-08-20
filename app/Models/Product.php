@@ -13,7 +13,7 @@ class Product extends Model
 
     public function Orders(){
         
-        return $this->belongsToMany(Order::class);
+        return $this->belongsToMany(Order::class,table:'order_product_pivot');
 
     }
 

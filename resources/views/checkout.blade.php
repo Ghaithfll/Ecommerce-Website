@@ -13,13 +13,12 @@
         <form method="POST" action="">
             @csrf
         <h2>{{$product->name}}</h2>
-       <?php 
-        $quantity = 1;
-
-       ?>
+      
         <p>Price: {{$product->price}}</p>
        
-        Quantity : <span> 1 </span> <br><br> 
+        Quantity : 
+        <input type="number" value="1" name="quantity" min="1">
+        <br> 
         {{-- <input type="number" value="1" name="quantity" disabled>
        --}} 
                Currency :<br>

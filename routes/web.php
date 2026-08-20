@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\cartController;
 use App\Models\Order;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -20,8 +21,18 @@ Route::get('/payment',[ProductController::class,'payment_get'])->name('payment')
 //    should be '/payment/{order}'
 Route::get('paymentResult',[ProductController::class,'payment_result'])->name('payment_result');
 
+Route::get('cart',[cartController::class,'index'])->name('cart');
+
+Route::post('cart',[cartController::class,'submit_checkout']);
+
+
+Route::get('cart/{product}',[cartController::class,'AddProduct'])->name('add_product_to_cart');
 
 Route::get('/orders',function(){
     $orders = Order::all();
     return view('orders',['orders' => $orders]);
 })->name('orders');
+
+
+
+Route::get('test',[ProductController::class,'TestPivot'])->name('test');

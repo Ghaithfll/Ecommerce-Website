@@ -77,6 +77,7 @@ class ProductController extends Controller
     }
     public function checkout(Product $product)
     {
+       
         $user = User::find(1);
         return view('checkout', ['product' => $product, 'user' => $user]);
     }
@@ -148,7 +149,7 @@ class ProductController extends Controller
             // request hyperpay api to get the result
             //dd("checkoutID is : $request->checkoutId");
             $responseData = json_decode(requestHyperpayResult($checkoutId));
-            
+
             // dd($responseData);
 
             if ($responseData == null) {
@@ -172,17 +173,17 @@ class ProductController extends Controller
             //$order->save(); // should here store the order
             // $orders = Order::all();
 
-          //  dd($order);
+            //  dd($order);
             $ord = Order::create([
                 'amount' => $order['amount'],
-                 'user_id' => $order['user_id'], 
-                 'product_id' => $order['product_id'],
-                 'currency' => $order['currency'],
-                 'status' => $order['status'],
-                 'payment_id' => $order['payment_id']
+                'user_id' => $order['user_id'],
+                'product_id' => $order['product_id'],
+                'currency' => $order['currency'],
+                'status' => $order['status'],
+                'payment_id' => $order['payment_id']
             ]);
 
-            
+
             return redirect()->route('orders');
         } catch (Exception $err) {
 
@@ -191,7 +192,23 @@ class ProductController extends Controller
             return back()->withErrors(["error" => "we couldnt process your payment, please try again"]);
         }
     }
-}
+    public function TestPivot()
+    {
+
+            $products = Product::all();
+            $order = Order::find(4);
+            foreach ($products as $product) {
+                
+            
+           
+            AddProductToPivot($order, $product);
+            print "This si";
+    }}
+
+
+    
+
+    }
 
 function requestHyperpayCheckout(Product $product)
 {
@@ -246,8 +263,8 @@ function requestHyperpayCheckout(Product $product)
 function requestHyperpayResult($checkoutId)
 {
     $url = "https://eu-test.oppwa.com/v1/checkouts/$checkoutId/payment";
-   // $url .= "?entityId=8a8294174d0595bb014d05d829cb01cd";
-/*
+    // $url .= "?entityId=8a8294174d0595bb014d05d829cb01cd";
+    /*
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -261,15 +278,15 @@ function requestHyperpayResult($checkoutId)
         return curl_error($ch);
     }
     curl_close($ch);*/
-//****************************** */
+    //****************************** */
     $responseData = Http::withToken('OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o=')
-    ->withQueryParameters(['entityId'=>'8a8294174d0595bb014d05d829cb01cd'])
-    ->get($url);
+        ->withQueryParameters(['entityId' => '8a8294174d0595bb014d05d829cb01cd'])
+        ->get($url);
 
-    
+
     if ($responseData->failed()) {
-    dd($responseData->body());
-    $responseData->throw();
+        dd($responseData->body());
+        $responseData->throw();
     }
     return $responseData->body();
 }
@@ -290,4 +307,16 @@ function ExtractPatmentStatus($statusCode)
     } else {
         return 'Failed';
     }
+}
+
+
+function AddProductToPivot($order, $product)
+{
+
+    $order->products()->attach($product->id, [
+        'quantity' => '2',
+        'unit_price' => $product->price,
+        'total' => '123456'
+    ]);
+    //dd($newPivotRecord);
 }

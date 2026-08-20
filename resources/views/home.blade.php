@@ -30,8 +30,10 @@
         <li><b>BUY NOW</b> Button</li>          
         
     </ul>
+    <form action="{{route('test')}}">
+    <button type="submit">Test Pivot</button>
+    </form>
 
-    
     <ul>
     @foreach ($products as $product)
         <li>
