@@ -25,6 +25,7 @@ Route::get('cart',[cartController::class,'index'])->name('cart');
 
 Route::post('cart',[cartController::class,'submit_checkout'])->name('cart_submit');
 
+//Route::delete('cart/{product}',[cartController::class,'removeProduct'])->name('removeProduct');
 
 Route::get('cart/{product}',[cartController::class,'AddProduct'])->name('add_product_to_cart');
 

@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Http\Controllers\requestHyperpayCheckout;
 use App\Models\Order;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -21,6 +22,8 @@ class cartController extends Controller
         return view('cart',['cart' => $cart,'user' => User::findorFail(1)]);
     }
     public function submit_checkout(Request $request){
+     
+   
     try {
             
     $cart = Cart::where('user_id', 1)->get();
@@ -30,8 +33,23 @@ class cartController extends Controller
         // display total (calculate each prod price*quantity)
         $total = 0;
         $product = "";
-        $order = session()->get('order');
+        //**************************************** */
         
+        $order = session()->get('order');
+    
+       // dd(session()->get('order'));
+        if ($order == null) {
+                    
+            
+            $order = Order::create([
+                'amount' => $total,// Total Price
+                'user_id' => 1,  //               user id is hardcoded
+                'currency' => 'SAR',
+                'status' => 'pending'
+            ]);
+           
+        //**************************************** */
+       // dd('hnnn');
         foreach ($cart as $record ) {
         //    dd($record);
            $product = Product::findorFail(($record->product_id));// $product
@@ -40,51 +58,57 @@ class cartController extends Controller
            $quantity = $request->$quant_field_name;
            $total += $quantity*($product->price);
            //add the product to the pivot table;
-           //AddProductToPivot($order, $product);
+           
+           AddProductToPivot($order, $product,$quantity*($product->price),$quantity);
            
            
         }
-       // dd($total);// we have the total
-            // calculate total
-            $responseData  =   requestHyperpayCheckout($total); // this is copied from the hyperpay request()
-
-
-            //dd($product);
-            //session()->put('order' , $order);
-            //$order = session()->get('order'); // its an array 
-            if ($order == null) {
-                
-            
-            $order = Order::create([
-                'amount' => $total,// Total Price
-                'user_id' => 1,  //               user id is hardcoded
-                'currency' => $product->currency,
-                'status' => 'pending'
-            ]);
-            session()->put('order', $order);
+        
+      
+        $order->amount = $total;
+        $order->currency = $product->currency;
+        $order->save();
+        
+        session()->put('order', $order);
             // todo: add the products to the pivot table
             }
-            
-        // display the checkout and the Card form
-        // request the above 
         
-    
-         $responseData = json_decode($responseData);
+            $responseData  =   requestHyperpayCheckout($total); // this is copied from the hyperpay request()
+
+   
+            $responseData = json_decode($responseData);
             if ($responseData != null) {
 
-
-                return redirect()->route('payment', [
+              
+            return redirect()->route('payment', [
 
                     'integrity' => $responseData->integrity, // these 2 are NOT sent by the url (payment/{order}) 
                     'checkoutId' => $responseData->id, // so u should request them from the other function (payment_get)
                 ]);
             }
+            dd($responseData,'before throwing exception (try: submit checkout)');
             throw new Exception("Null Response");
         } catch (Exception $err) {
-            Log::error("checkout Api failed", ['error' => $err->getMessage()]);
+
+        if ($order !=null) {
+            
+        
+        DeleteOrderAllPivotRecords($order?->id);  
+        Order::where('id',$order?->id)->delete();
+        }
+        session()->forget('order');
+        Log::error("checkout Api failed", ['error' => $err->getMessage()]);
             return back()->withErrors(['error' => 'Prepare The Checkout Failed!, try again']);
         }
         }
+        // public function removeProduct(Product $product,Cart $cart){
+
+        // dd($cart,$product);
+        // // remove product from cart
+        
+        // // redirect back
+
+        // }
 
     public function AddProduct(Product $product){
     // add product to cart
@@ -126,6 +150,7 @@ class cartController extends Controller
                 'currency' => $product->currency,
                 'status' => 'pending'
             ]);
+            
             session()->put('order', $order);
              /* [
                 'amount' => $product->price,
@@ -168,30 +193,30 @@ function requestHyperpayCheckout($total)
 
     $url = "https://eu-test.oppwa.com/v1/checkouts";
     /*
-    //dd(number_format($product->price,2));
-    $data =
-        "entityId=8a8294174d0595bb014d05d829cb01cd" . // ur merchant id
-        "&amount=" . number_format($product->price, 2) .        //           the amount should be paid
-        "&currency=EUR" .
-        "&paymentType=DB" . //      debit pay: 'take the money from the customer'
-        "&integrity=true"; //      "Perform integrity checks."
+        //dd(number_format($product->price,2));
+        $data =
+            "entityId=8a8294174d0595bb014d05d829cb01cd" . // ur merchant id
+            "&amount=" . number_format($product->price, 2) .        //           the amount should be paid
+            "&currency=EUR" .
+            "&paymentType=DB" . //      debit pay: 'take the money from the customer'
+            "&integrity=true"; //      "Perform integrity checks."
 
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Authorization:Bearer OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o='
-    ));
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // this should be set to true in production
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $responseData = curl_exec($ch);                  // now execute the cURL
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Authorization:Bearer OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o='
+        ));
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // this should be set to true in production
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $responseData = curl_exec($ch);                  // now execute the cURL
 
-    if (curl_errno($ch)) {
-        return curl_error($ch);
-    }
-    curl_close($ch);
+        if (curl_errno($ch)) {
+            return curl_error($ch);
+        }
+        curl_close($ch);
     */
 
     $responseData = Http::asForm()->withHeaders([
@@ -204,7 +229,7 @@ function requestHyperpayCheckout($total)
         'integrity' => true
 
     ]);
-
+    dd(number_format($total, 2));
     if ($responseData->failed()) {
         $responseData->throw();
     }
@@ -212,6 +237,7 @@ function requestHyperpayCheckout($total)
 
     return $responseData;
 }
+
 
 
 function AddProductToPivot($order, $product,$total,$quantity)
@@ -223,4 +249,9 @@ function AddProductToPivot($order, $product,$total,$quantity)
         'total' => $total,
     ]);
     //dd($newPivotRecord);
-}
+
+    }
+
+     function DeleteOrderAllPivotRecords($order_id){
+        DB::table('order_product_pivot')->where('order_id',$order_id)->delete();
+    }  

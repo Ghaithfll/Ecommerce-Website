@@ -25,6 +25,12 @@
         <p> Unit price : {{$product->price}}</p><br>
     
 
+        {{-- <br><br>
+        <form action="{{route('removeProduct',['product' => $product])}}">
+          @csrf
+          @method('DELETE')
+        <button type="submit">Remove From Cart</button>
+        </form> --}}
       </div>
 
     {{-- </fieldset> --}}

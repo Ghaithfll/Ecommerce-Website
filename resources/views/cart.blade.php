@@ -15,6 +15,7 @@
     
     @else
     <h2>Products in my cart :</h2>
+    
         <form method="POST" action="">
         @csrf
 

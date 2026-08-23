@@ -18,8 +18,8 @@
 <body>
     <x-navbar/>
 
-    <ul>
-        <li>Display all available products.  </li> {{-- <p class="done">Done</p>--}} 
+    {{-- <ul>
+        <li>Display all available products.  </li> 
         <li>Each product should show:</li>          
         <ol>
             <li>Image  </li>                    
@@ -29,20 +29,12 @@
         </ol>
         <li><b>BUY NOW</b> Button</li>          
         
-    </ul>
-    <form action="{{route('test')}}">
-    <button type="submit">Test Pivot</button>
-    </form>
-
+    </ul> --}}
+  
     <ul>
     @foreach ($products as $product)
         <li>
-           {{-- <x-productui  
-           title="{{$product->name}}"
-           image="{{$product->image}}"
-           description="{{$product->description}}"
-           price="{{$product->price}}"
-           /> --}}
+           
             
            <x-productui :product='$product'/>
            

@@ -143,60 +143,50 @@ class ProductController extends Controller
     {
 
         try {
-        
+            
             $checkoutId = $request['checkoutId'];
 
-            // request hyperpay api to get the result
-            //dd("checkoutID is : $request->checkoutId");
-//dd("here");
+
             
             $responseData = json_decode(requestHyperpayResult($checkoutId));
 
-            // dd($responseData);
+            
 
             if ($responseData == null) {
                 //dd("Null Api response while requesting the payment result");
                 throw new Exception("Null Api response while requesting the payment result");
             }
 
+            
             // verify the currency,amount,ID
 
             $paymentStatus = ExtractPatmentStatus($responseData->result->code);
-            // update the order status
-            //dd('payment status: success','1');
-            //dd("Before redirecting, $paymentStatus");
             
-            //dd(session()->all());
+            // update the order status
+           
             $order = session()->get('order');
-            //dd($order,session()->get('order'),'2');
+            
             $order = Order::findorFail($order['id']);
-            //dd($order);
+            
             $order->status = $paymentStatus;
-            //dd('order status success');
-            //  dd("Unable to store the order",$responseData );
+            
             $order->payment_id = $responseData->id;
 
             $order->save(); // should here store the order
+            
             session()->forget('order');
             
-            // $orders = Order::all();
+           
 
-            //  dd($order);
-            // $ord = Order::create([
-            //     'amount' => $order['amount'],
-            //     'user_id' => $order['user_id'],
-            //     'product_id' => $order['product_id'],
-            //     'currency' => $order['currency'],
-            //     'status' => $order['status'],
-            //     'payment_id' => $order['payment_id']
-            // ]);
-
-
+            // drop the cart
+            
             return redirect()->route('orders');
         } catch (Exception $err) {
 
 
             Log::error('Payment Api Failed', ['error' => $err->getMessage()]);
+            dd('Response Error,unexpected failed response!',$responseData,$order);            
+            
             return back()->withErrors(["error" => "we couldnt process your payment, please try again"]);
         }
     }
@@ -204,7 +194,7 @@ class ProductController extends Controller
     {
 
             $products = Product::all();
-            $order = Order::find(4);
+            $order = Order::findorFail(4);
             foreach ($products as $product) {
                 
             
