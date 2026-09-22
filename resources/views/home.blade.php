@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    {{-- <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <meta charset="UTF-8"> --}}
+       @vite('resources/css/app.css')
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Home</title>
@@ -16,31 +19,15 @@
 
 </head>
 <body>
-    <x-navbar/>
+    <x-navbar />
 
-    {{-- <ul>
-        <li>Display all available products.  </li> 
-        <li>Each product should show:</li>          
-        <ol>
-            <li>Image  </li>                    
-            <li>Name  </li>                     
-            <li>Description  </li>              
-        <li>Price  </li>                        
-        </ol>
-        <li><b>BUY NOW</b> Button</li>          
-        
-    </ul> --}}
-  
-    <ul>
+    <div class="grid grid-cols-2 w-fit mx-auto gap-10 ">
     @foreach ($products as $product)
-        <li>
-           
-            
-           <x-productui :product='$product'/>
-           
-                
-        </li>
+        
+           <x-productui  :product='$product'/>
+               
+        
     @endforeach
-    </ul>
+    </div>
 </body>
 </html>

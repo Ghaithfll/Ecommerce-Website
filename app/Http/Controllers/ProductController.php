@@ -68,68 +68,68 @@ class ProductController extends Controller
         return redirect()->route('home'); // u may want to send some data
     }
 
-    /**
-     * Display the specified resource.
-     */
+    
+    
     public function details(Product $product)
     {
         return view('product.details', ['product' => $product]);
     }
-    public function checkout(Product $product)
-    {
+    // public function checkout(Product $product)
+    // {
        
-        $user = User::find(1);
-        return view('checkout', ['product' => $product, 'user' => $user]);
-    }
+    //     $user = User::find(1);
+    //     return view('checkout', ['product' => $product, 'user' => $user]);
+    // }
 
 
-    public function checkout_submit(product $product)
-    {
-        try {
+    // public function checkout_submit(product $product)
+    // {
+    //     try {
 
-            $responseData  =   requestHyperpayCheckout($product); // this is copied from the hyperpay request()
-
-
-
-            //session()->put('order' , $order);
-            session()->put('order', [
-                'amount' => $product->price,
-                'user_id' => 1,
-                'product_id' => $product->id,
-                'currency' => $product->currency,
-                'status' => 'pending',
-            ]);
-            //dd($order);
+    //         $responseData  =   requestHyperpayCheckout($product); // this is copied from the hyperpay request()
 
 
-            // $order = Order::create([
-            //     'amount' => $product->price,
-            //     'user_id' => 1,  //               user id is hardcoded
-            //     'product_id' => $product->id,
-            //     'currency' => $product->currency,
-            //     'status' => 'pending'
-            // ]);
-            //dd($order);
-            $responseData = json_decode($responseData);
-            if ($responseData != null) {
+
+    //         //session()->put('order' , $order);
+    //         session()->put('order', [
+    //             'amount' => $product->price,
+    //             'user_id' => 1,
+    //             'product_id' => $product->id,
+    //             'currency' => $product->currency,
+    //             'status' => 'pending',
+    //         ]);
+    //         //dd($order);
 
 
-                return redirect()->route('payment', [
-
-                    'integrity' => $responseData->integrity, // these 2 are NOT sent by the url (payment/{order}) 
-                    'checkoutId' => $responseData->id, // so u should request them from the other function (payment_get)
-                ]);
-            }
-            throw new Exception("Null Response");
-        } catch (Exception $err) {
-            Log::error("checkout Api failed", ['error' => $err->getMessage()]);
-            return back()->withErrors(['error' => 'Prepare The Checkout Failed!, try again']);
-        }
-
-        // dd($order);
+    //         // $order = Order::create([
+    //         //     'amount' => $product->price,
+    //         //     'user_id' => 1,  //               user id is hardcoded
+    //         //     'product_id' => $product->id,
+    //         //     'currency' => $product->currency,
+    //         //     'status' => 'pending'
+    //         // ]);
+    //         //dd($order);
+    //         $responseData = json_decode($responseData);
+    //         if ($responseData != null) {
 
 
-    }
+    //             return redirect()->route('payment', [
+
+    //                 'integrity' => $responseData->integrity, // these 2 are NOT sent by the url (payment/{order}) 
+    //                 'checkoutId' => $responseData->id, // so u should request them from the other function (payment_get)
+    //             ]);
+    //         }
+    //         throw new Exception("Null Response");
+    //     } catch (Exception $err) {
+    //         Log::error("checkout Api failed", ['error' => $err->getMessage()]);
+    //         return back()->withErrors(['error' => 'Prepare The Checkout Failed!, try again']);
+    //     }
+
+    //     // dd($order);
+
+
+    // }
+
     public function payment_get(Request $request)
     {
 
@@ -185,23 +185,12 @@ class ProductController extends Controller
 
 
             Log::error('Payment Api Failed', ['error' => $err->getMessage()]);
-            dd('Response Error,unexpected failed response!',$responseData,$order);            
+           // dd('Response Error,unexpected failed response!',$responseData,$order);            
             
             return back()->withErrors(["error" => "we couldnt process your payment, please try again"]);
         }
     }
-    public function TestPivot()
-    {
-
-            $products = Product::all();
-            $order = Order::findorFail(4);
-            foreach ($products as $product) {
-                
-            
-           
-            AddProductToPivot($order, $product);
-            print "This si";
-    }}
+   
 
 
     
@@ -213,30 +202,30 @@ function requestHyperpayCheckout($total)
 
     $url = "https://eu-test.oppwa.com/v1/checkouts";
     /*
-    //dd(number_format($product->price,2));
-    $data =
-        "entityId=8a8294174d0595bb014d05d829cb01cd" . // ur merchant id
-        "&amount=" . number_format($product->price, 2) .        //           the amount should be paid
-        "&currency=EUR" .
-        "&paymentType=DB" . //      debit pay: 'take the money from the customer'
-        "&integrity=true"; //      "Perform integrity checks."
+            //dd(number_format($product->price,2));
+            $data =
+                "entityId=8a8294174d0595bb014d05d829cb01cd" . // ur merchant id
+                "&amount=" . number_format($product->price, 2) .        //           the amount should be paid
+                "&currency=EUR" .
+                "&paymentType=DB" . //      debit pay: 'take the money from the customer'
+                "&integrity=true"; //      "Perform integrity checks."
 
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Authorization:Bearer OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o='
-    ));
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // this should be set to true in production
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $responseData = curl_exec($ch);                  // now execute the cURL
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Authorization:Bearer OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o='
+            ));
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // this should be set to true in production
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $responseData = curl_exec($ch);                  // now execute the cURL
 
-    if (curl_errno($ch)) {
-        return curl_error($ch);
-    }
-    curl_close($ch);
+            if (curl_errno($ch)) {
+                return curl_error($ch);
+            }
+            curl_close($ch);
     */
 
     $responseData = Http::asForm()->withHeaders([
@@ -316,5 +305,19 @@ function AddProductToPivot($order, $product)
         'unit_price' => $product->price,
         'total' => '123456'
     ]);
+    /*
+      here u added onoly one line to the db, BUT
+      u can add multiple products to the same order,
+       by grouping the products ids with the other fields in the same array
+
+       $pivotData = [
+       '1' => ['quantity' => '2','unit_price' => '20',...],     line1
+       '4' => ['quantity' => '6','unit_price' => '20',...],     line2
+       '5' => ['quantity' => '8','unit_price' => '20',...],     line3
+
+       ],
+       (now u have a list of products and other fields)
+       $order->products()->attach($pivotData);      
+    */
     //dd($newPivotRecord);
 }

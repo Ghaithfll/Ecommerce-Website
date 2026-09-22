@@ -1,27 +1,52 @@
 
-convert curl to http client (guzzel)                Done
-error handling                                      Done            
-null safes ( handle null/undefined values)          Done
+        convert curl to http client (guzzel)                Done
+        error handling                                      Done            
+        null safes ( handle null/undefined values)          Done
 
-fix the 'back' action actaully storing an instance in orders table  Done
+        fix the 'back' action actaully storing an instance in orders table  Done
 
-new:
+        new:
 
-    create & store the order in the checkout page, even if the customer went back and re-opened the page
-        the page will access the SAME order just created
-    Order may have multiple products
-    fix the relationship between classes(models)    
-
-
+            create & store the order in the checkout page, even if the customer went back and re-opened the page
+                the page will access the SAME order just created
+            Order may have multiple products
+            fix the relationship between classes(models)    
 
 
-    To Do:
-    - create AddProductToPivot($product) function (should be called in a foreach($products as $product))
-    - store the order_id in a session, if the user went back and re-opened the page that creates the order
-       it should check (is there an order already created in the session? yes!, then load that order/ No!, create the order)
-    - once the payment is finalyzed , delete the order from the session    
-    - prevent adding the same product multiple times to the cart
+
+
+            To Do:
+            - create AddProductToPivot($product) function (should be called in a foreach($products as $product))
+            - store the order_id in a session, if the user went back and re-opened the page that creates the order
+            it should check (is there an order already created in the session? yes!, then load that order/ No!, create the order)
+            - once the payment is finalyzed , delete the order from the session    
+            - prevent adding the same product multiple times to the cart
+        
+        DONE 
+
 
     what if an order was created and the user never paid (the order still in the db)
     
      should the order be deleted after some amount of time?
+
+    what if the user added some quantities of some products and went to the payment form,
+    (order and pivot records are stored) , then the user went back to the checkout page 
+    and proceeded again to the payment,(another pivot records are created for the same order) 
+    
+    How do we prevent this?
+
+    by using $order->products()->sync($pivotData); 
+     sync makes the data associated with this order exactly this $pivotData (drops anything else)
+
+
+    how can we actually get the status when we have Tons of possible status codes????????
+
+     ExtractPaymentStatus($responseData->result->code); 
+
+
+    why even without @csrf , i DON'T get the 419 Bad request ??  is my laravel corrupted?
+    
+
+
+    npm run dev               whenever u make a change in ur css classes , vite just reloads that automatically
+                               without u doing that urself

@@ -3,7 +3,7 @@
 
 {{-- <fieldset>
   <legend>{{$product}}</legend> --}}
-<div>
+<div {{$attributes}}>
   <?php 
     use App\Models\Product;
     $product1 = Product::findorFail($product);
@@ -25,12 +25,12 @@
         <p> Unit price : {{$product->price}}</p><br>
     
 
-        {{-- <br><br>
-        <form action="{{route('removeProduct',['product' => $product])}}">
+        <br><br>
+        <form id='remove_product_{{$product->id}}' action="{{route('removeProduct',['product' => $product])}}" method="POST">
           @csrf
           @method('DELETE')
-        <button type="submit">Remove From Cart</button>
-        </form> --}}
+        <button type="submit" {{$slot}} form="remove_product_{{$product->id}}">Remove From Cart {{$product->id}}</button>
+        </form>
       </div>
 
     {{-- </fieldset> --}}

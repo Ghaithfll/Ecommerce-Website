@@ -11,30 +11,36 @@
         }
     </style>
 
-
+  @vite('resources/css/app.css')
 </head>
 <body>
 <x-navbar/>
 
-    <h1>All Orders :</h1>
-<table>
-    @if (count($orders)!=0)
+    <h1 class="text-3xl font-bold mx-10 mb-30">Orders History:</h1>
+
+@if (count($orders)!=0)
         
     
 
- <tr>
+
+
+<div class="overflow-x-auto m-10">
+  <table class="table">
+    <!-- head -->
+    <thead>
+      <tr>
     <th>Order ID</th>
     <th>Customer_ID</th>
     <th>Total_Price</th>
     <th>Payment_ID</th>
     <th>Status</th>
  </tr>
- @endif
- {{-- @foreach ($collection as $item)
-     
- @endforeach --}}
-     @forelse ($orders as $order)
- <tr>
+    </thead>
+    <tbody>
+      <!-- row 1 -->
+      
+          @forelse ($orders as $order)
+ <tr class="bg-base-200">
     <td>{{$order->id}}</td>
     <td>{{$order->user_id}}</td>
     <td>{{$order->amount}}</td>
@@ -46,12 +52,17 @@
      @empty
         <h1>No orders currently</h1>
     @endforelse
-
-
-
-</table>
-
-
+      
+    </tbody>
+  </table>
+</div>
+ 
+     
+ @else
+  <div class=" w-screen flex justify-center ">
+  <h1 class="text-3xl font-bold"> No Orders Yet </h1>    
+  </div>
+  @endif
 
 </body>
 </html>

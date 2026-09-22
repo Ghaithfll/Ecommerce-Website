@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Payment</title>
+     @vite('resources/css/app.css')
 </head>
 <body>
 
-    <h1>Payment page</h1>
+    <h1 class="text-3xl m-15 font-bold">Payment page</h1>
 
+    <div class="text-black">
+       
 <script
     src="https://eu-test.oppwa.com/v1/paymentWidgets.js?checkoutId={{$checkoutId}}"
     integrity={{$integrity}}
@@ -20,6 +23,7 @@
     class="paymentWidgets"
     data-brands="VISA MASTER AMEX">
 </form>
+    </div>
 
 
 @error('error')
