@@ -1,10 +1,7 @@
 
 
-<nav>
-    <a href="{{route('home')}}">Home</a>
-    <a href="{{route('create-product')}}">Create Product</a>
-    <a href="{{route('cart')}}">Cart</a>
-    <a href="{{route('orders')}}">Orders Page</a>
+
+<a {{$attributes}} class="hover:bg-cyan-800 rounded-2xl p-3">{{$slot}}</a>
     
-</nav>
+    
 

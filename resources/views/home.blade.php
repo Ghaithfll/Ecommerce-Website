@@ -1,46 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Home</title>
-     
-       <style>
-        .done{
-            color:green;
-            font-weight: 600;
-        }
-       </style>
 
-
-</head>
-<body>
-    <x-navbar/>
-
-    {{-- <ul>
-        <li>Display all available products.  </li> 
-        <li>Each product should show:</li>          
-        <ol>
-            <li>Image  </li>                    
-            <li>Name  </li>                     
-            <li>Description  </li>              
-        <li>Price  </li>                        
-        </ol>
-        <li><b>BUY NOW</b> Button</li>          
-        
-    </ul> --}}
+<x-layouts.Layout >
   
-    <ul>
+    @if (count($products) == 0)
+      <main class="w-full h-screen flex content-end justify-center items-center">
+        <div >
+        <h1 class="text-2xl font-bold">No Products Added Yet</h1>    
+        <a href="{{route('create-product')}}">
+        <button class="w-full bg-cyan-500 hover:bg-cyan-800 rounded font-bold text-white min-h-13 my-5">Create Product</button>    
+        </a>
+    </div>
+</main>  
+
+@else
+    <main class="pt-35">
+        <div class="flex place-content-center w-full">
+    <aside class="grid grid-cols-2 gap-9  w-fit h-fit ">
     @foreach ($products as $product)
-        <li>
+        
            
             
-           <x-productui :product='$product'/>
+           <x-productui  :product='$product'/>
            
                 
-        </li>
+        
     @endforeach
-    </ul>
-</body>
-</html>
+    </aside>
+        </div>
+    </main>
+@endif
+</x-layouts.Layout>

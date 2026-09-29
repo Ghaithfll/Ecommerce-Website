@@ -1,0 +1,121 @@
+ahmad -> Ahmad
+Update Customers Set name= 'Ahmad' where name='ahmad'
+
+
+order by 
+grouping 
+joins -> inner, outer, left and right 
+
+sub queries
+relations query 
+
+auth types/ authorization
+
+APIs 
+
+facade singleton factory repository , strategy
+
+design patterns catrgories
+
+
+
+
+
+
+
+
+
+
+
+Update Customers Set City = 'Oslo' where City='oslu';
+Update Customers Set City = 'Oratrice', Name = 'Neuvillette' Where id = 10;
+
+Delete From Customers Where name = 'Hnn';
+
+
+
+Select all records from the Customers table, sort the result alphabetically,
+ first by the column Country, then, by the column City.
+
+Select * From Customers Order By Country,City ; 
+
+SELECT TOP 5 * FROM Customers;
+    Select the first 5 records from the Customers table (Select *  => Select Top 5 *, Select Name => Select Top 5 Name)
+
+
+
+
+
+
+
+CustomerName LIKE 'G%';              name start with G
+
+SELECT * FROM Customers WHERE CustomerID NOT BETWEEN 10 AND 50;
+
+   SELECT * FROM Customers WHERE City NOT IN ('Paris', 'London');
+
+Insert multiple Rows
+
+   INSERT INTO table_name VALUES (value1), (value2), (value3);
+
+
+   Is Null , Is Not Null
+
+
+SELECT Count (*) FROM Products
+  where Price = 18;
+
+Select all records where the first letter of the City is an "a" or a "c" or an "s".
+
+
+SELECT * FROM Customers WHERE City LIKE '[acs]%' ;     []: to give a set of available chars
+
+SELECT * FROM Customers
+WHERE City LIKE '[a-f]%';              anything from a to f
+
+SELECT * FROM Customers WHERE Country IN ('Germany', 'France', 'UK');
+
+
+keywords:
+
+ Top
+ Limit      limit the number of returned records (Select * From ... where ... Limit 5) max num of returned rows is 5'
+            offset (optional) , offset can be used after the Limit to specify Where to start counting the rows
+            (ex: u have these rows returned from "Select * ... Limit 5" )
+             row 0, row 1, row 2, row 3, row 4    u have these five rows 
+              Limit 5 offset 1 
+              result:
+              row 1,row 2,row 3, row 4. row 5   (row 0 is gone! cuz we started counting from row 1 (offset 1))
+
+ Min(col_name)       select Min(salary) from ...;   
+ Max(col_name)
+ Sum(col_name)
+ Avg(col_name)
+ As                  select name As 'user_name
+ Count                     
+ Distinct            ignore duplicates
+ Like                where name Like '_h__%' ; has 'h' as the second letter, with at least 2 letters after 'h' 
+                        _ : one char
+                        % : 0 or more   (these are called wildcards)
+                        []: gives multiple choices   Like '[abc]%'  starts with a,b or c 
+                                                     Like '[!abc]%'  does NOT start with a,b or c
+                        []: gives a range, Like '[a-f]%'     starts with a char from a to f  
+                        Like : case In-sensitive search
+
+
+
+
+
+Inner Join,  join two tables according to the Pk and FK
+
+SELECT * FROM movies Inner Join Boxoffice On movies.id = Boxoffice.movie_id;
+
+
+
+
+ npm uninstall daisyui
+ npm run dev               tailwind will NOT work if u dont run this everytime u open the prj   
+ .....   build             except if u ran this 'run build'
+
+php artisan make:factory ProductFactory --model=Product
+php artisan db:seed

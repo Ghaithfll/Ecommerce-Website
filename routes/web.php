@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\cartController;
+use App\Http\Controllers\CategoryController;
 use App\Models\Order;
 use App\Http\Controllers\ProductController;
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/',[ProductController::class,'home'])->name('home');
@@ -10,6 +13,8 @@ Route::get('/',[ProductController::class,'home'])->name('home');
 
 Route::get('/products/create',[ProductController::class,'create'])->name('create-product');
 Route::post('/products/create',[ProductController::class,'store']);
+
+Route::get('/category/{category}', [CategoryController::class,'show']);
 
 Route::get('/products/{product}',[ProductController::class,'details'])->name('product-details');
 

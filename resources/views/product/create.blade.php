@@ -20,16 +20,29 @@
         <x-formError field='description'/>
         
         <br>
+        <label >Category:</label>
+        <select name="category_id">
+            @foreach ($categs as $categ)
+            <option value="{{$categ->id}}">{{$categ->name}}</option>
+                
+            @endforeach
+            
+        </select>
+        <br><br>
         <label for="price">Product Price</label><br>
         <input name="price" id="price" type="number" step="any">
         <br>
         <x-formError field='price'/>
+        <br>
+
+        <label >Currency:</label>
         <select name="currency">
             <option value="SAR">SAR</option>
             <option value="JOD">JOD</option>
             <option value="USD">USD</option>
 
         </select>
+        <br><br>
         
         <label for="image">Product Image</label><br><br>
          &nbsp; &nbsp; &nbsp;<input name="image" id="image" type="file" accept="image/*" >

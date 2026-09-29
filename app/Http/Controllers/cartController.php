@@ -139,7 +139,9 @@ class cartController extends Controller
     {
         try {
             // calculate total
-            $responseData  =   requestHyperpayCheckout($product); // this is copied from the hyperpay request()
+            $total = 0;  // calculate toatl THEn call the hyperpay
+                        // get the version of the OTHER branch
+            $responseData  =   requestHyperpayCheckout($total); // this is copied from the hyperpay request()
 
 
 
@@ -152,18 +154,7 @@ class cartController extends Controller
             ]);
             
             session()->put('order', $order);
-             /* [
-                'amount' => $product->price,
-                'user_id' => 1,
-                'product_id' => $product->id,
-                'currency' => $product->currency,
-                'status' => 'pending',
-            ]*/ 
-            //dd($order);
-
-
-            
-            //dd($order);
+          
             $responseData = json_decode($responseData);
             if ($responseData != null) {
 
@@ -192,32 +183,6 @@ function requestHyperpayCheckout($total)
 {
 
     $url = "https://eu-test.oppwa.com/v1/checkouts";
-    /*
-        //dd(number_format($product->price,2));
-        $data =
-            "entityId=8a8294174d0595bb014d05d829cb01cd" . // ur merchant id
-            "&amount=" . number_format($product->price, 2) .        //           the amount should be paid
-            "&currency=EUR" .
-            "&paymentType=DB" . //      debit pay: 'take the money from the customer'
-            "&integrity=true"; //      "Perform integrity checks."
-
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Authorization:Bearer OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o='
-        ));
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // this should be set to true in production
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $responseData = curl_exec($ch);                  // now execute the cURL
-
-        if (curl_errno($ch)) {
-            return curl_error($ch);
-        }
-        curl_close($ch);
-    */
 
     $responseData = Http::asForm()->withHeaders([
         'Authorization' => "Bearer OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o="
@@ -229,8 +194,8 @@ function requestHyperpayCheckout($total)
         'integrity' => true
 
     ]);
-    dd(number_format($total, 2));
     if ($responseData->failed()) {
+       // dd($responseData);
         $responseData->throw();
     }
 
