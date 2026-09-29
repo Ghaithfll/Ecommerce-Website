@@ -18,7 +18,7 @@ class cartController extends Controller
     public function index(){
         
         $cart = Cart::where('user_id', 1)->get();
-       
+      //  $cart = [];
         return view('cart',['cart' => $cart,'user' => User::findorFail(1)]);
     }
     public function submit_checkout(Request $request){
@@ -32,7 +32,7 @@ class cartController extends Controller
         // quantity_prod_Id , currency
         // display total (calculate each prod price*quantity)
         $total = 0;
-        $product = "";
+      
         //**************************************** */
         
         $order = session()->get('order');
@@ -47,32 +47,39 @@ class cartController extends Controller
                 'currency' => 'SAR',
                 'status' => 'pending'
             ]);
+           session()->put('order', $order);
            
-        //**************************************** */
-       // dd('hnnn');
-        foreach ($cart as $record ) {
-        //    dd($record);
+           }
+            else{
+                $order = Order::findorFail($order['id']);
+            }
+        
+        /*   foreach ($cart as $record ) {
+           //    dd($record);
            $product = Product::findorFail(($record->product_id));// $product
-          // dd($product,$record->product_id);
+           // dd($product,$record->product_id);
            $quant_field_name = 'quantity_'.$product->id;
            $quantity = $request->$quant_field_name;
            $total += $quantity*($product->price);
            //add the product to the pivot table;
            
+
+           // use array_sum or Arr::sum etc to calculate total
+           
            AddProductToPivot($order, $product,$quantity*($product->price),$quantity);
            
-           
-        }
-        
+        }   
+        */
+       
+       $total= AddProductToPivot($order,$cart);
       
         $order->amount = $total;
-        $order->currency = $product->currency;
+       //              $order->currency = $product->currency;
         $order->save();
-        
         session()->put('order', $order);
-            // todo: add the products to the pivot table
-            }
+            
         
+            
             $responseData  =   requestHyperpayCheckout($total); // this is copied from the hyperpay request()
 
    
@@ -97,20 +104,34 @@ class cartController extends Controller
         Order::where('id',$order?->id)->delete();
         }
         session()->forget('order');
+        // maybe we should delete the pivot records as well?
         Log::error("checkout Api failed", ['error' => $err->getMessage()]);
             return back()->withErrors(['error' => 'Prepare The Checkout Failed!, try again']);
         }
         }
-        // public function removeProduct(Product $product,Cart $cart){
 
-        // dd($cart,$product);
-        // // remove product from cart
+
+        public function removeProduct(Product $product){
+         // get the cart
         
-        // // redirect back
+                $cart = Cart::where('user_id', 1)->get();
+                
+                $model = $cart->firstWhere('product_id' , $product->id);
+            // dd($model->product_id,$product->id);
+            
+            if ($model != null) {
+                    $model->delete();
+                }
+                return redirect()->back();
+                // remove product from cart
+                
+                // redirect back
 
-        // }
+                }
 
-    public function AddProduct(Product $product){
+    
+        
+        public function AddProduct(Product $product){
     // add product to cart
     $cart = Cart::where('user_id',1)->get();// get the cart of this user
     
@@ -135,46 +156,6 @@ class cartController extends Controller
     }
 
 
-    public function cart_submit(product $product)
-    {
-        try {
-            // calculate total
-            $total = 0;  // calculate toatl THEn call the hyperpay
-                        // get the version of the OTHER branch
-            $responseData  =   requestHyperpayCheckout($total); // this is copied from the hyperpay request()
-
-
-
-            //session()->put('order' , $order);
-            $order = Order::create([
-                'amount' => $product->price,// Total Price
-                'user_id' => 1,  //               user id is hardcoded
-                'currency' => $product->currency,
-                'status' => 'pending'
-            ]);
-            
-            session()->put('order', $order);
-          
-            $responseData = json_decode($responseData);
-            if ($responseData != null) {
-
-
-                return redirect()->route('payment', [
-
-                    'integrity' => $responseData->integrity, // these 2 are NOT sent by the url (payment/{order}) 
-                    'checkoutId' => $responseData->id, // so u should request them from the other function (payment_get)
-                ]);
-            }
-            throw new Exception("Null Response");
-        } catch (Exception $err) {
-            Log::error("checkout Api failed", ['error' => $err->getMessage()]);
-            return back()->withErrors(['error' => 'Prepare The Checkout Failed!, try again']);
-        }
-
-        // dd($order);
-
-
-    }
 }
 
 
@@ -183,7 +164,7 @@ function requestHyperpayCheckout($total)
 {
 
     $url = "https://eu-test.oppwa.com/v1/checkouts";
-
+ 
     $responseData = Http::asForm()->withHeaders([
         'Authorization' => "Bearer OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o="
     ])->post($url, [
@@ -194,9 +175,10 @@ function requestHyperpayCheckout($total)
         'integrity' => true
 
     ]);
+   
     if ($responseData->failed()) {
-       // dd($responseData);
-        $responseData->throw();
+    dd($responseData);    
+    $responseData->throw();
     }
 
 
@@ -205,18 +187,59 @@ function requestHyperpayCheckout($total)
 
 
 
-function AddProductToPivot($order, $product,$total,$quantity)
+function AddProductToPivot($order, $carts)
 {
 
-    $order->products()->attach($product->id, [
-        'quantity' => $quantity,
-        'unit_price' => $product->price,
-        'total' => $total,
-    ]);
-    //dd($newPivotRecord);
+    $pivotData = []; 
+    //dd($carts);
+    
+   $total = $carts->reduce(function (int $totalCarry ,$item) use(&$pivotData){  // pass the array by refrence, or else it will be pass by val (we lose all the data)
+ 
+    
+   $product = Product::findorFail($item->product_id);
+   $unit_price = $product->price;
+   $quant_name = "quantity_". $product->id;
+   $unit_quantity = Request($quant_name); 
+   $totalCarry += $unit_price*$unit_quantity;
 
-    }
+    $pivotData[$product->id] = [
+        'quantity' => $unit_quantity,
+        'unit_price' => $unit_price,
+        'total' => $unit_price * $unit_quantity,
+        ];
+       // dd($pivotData);
+        
+       return $totalCarry;
+
+   }, 0);
+
+   // now we have all the data we need , each product_id with its data
+//dd($pivotData);
+   $order->products()->sync($pivotData);
+   
+   
+   return $total;
+
+//    // dd($order->products());
+//     $order->products()->attach($product->id, [
+//         'quantity' => $quantity,
+//         'unit_price' => $product->price,
+//         'total' => $total,
+//     ]);
+    
+}
 
      function DeleteOrderAllPivotRecords($order_id){
         DB::table('order_product_pivot')->where('order_id',$order_id)->delete();
     }  
+
+
+
+    function sumProducts($total,$unit_price,$quantity){
+        $total += $unit_price*$quantity;
+        return $total; 
+    }
+
+
+
+
