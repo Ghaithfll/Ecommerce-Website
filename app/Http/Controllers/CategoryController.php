@@ -11,7 +11,8 @@ class CategoryController extends Controller
     
     public function index()
     {
-        return view('categories.index');
+        $categs = Category::all();
+        return view('categories.index',['categs' => $categs]);
     }
 
     
@@ -33,8 +34,8 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        dd($category);
-    $products = Product::where('category_id', $category->id);
+        
+    $products = Product::where('category_id', $category->id)->get();
     return view('categories.category',['category' => $category,'products' => $products]);
 
     }

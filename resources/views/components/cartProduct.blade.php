@@ -1,36 +1,34 @@
 @props(['product'])
 
 
-{{-- <fieldset>
-  <legend>{{$product}}</legend> --}}
 <div>
   <?php 
     use App\Models\Product;
     $product1 = Product::findorFail($product);
     $product = $product1;
     ?>
+    <aside class="w-full flex justify-end h-fit">
+<form id='remove_product_{{$product->id}}' action="{{route('removeProduct',['product' => $product])}}" method="POST">
+          @csrf
+          @method('DELETE')
+        <button type="submit" class="bg-red-500 hover:bg-red-700 rounded-2xl my-4 h-fit text-white font-bold w-fit px-4"  form="remove_product_{{$product->id}}">Remove From Cart {{$product->id}}</button>
+        </form>
+    </aside>
     @if ($product->image != null)
     <img src="{{asset('storage/'.$product->image)}}" width="150px" height="100px">
         
     @endif    
     
-  <h2>{{$product->name}}</h2>
+  <h2 class="font-bold h-15">{{$product->name}}</h2>
       
-       <p>Price: {{$product->price}}</p>
+  
        
-        {{-- Quantity : 
-        <input type="number" value="1" name="quantity" min="1">
-        <br> --}}
-         <p>Description: {{$product->description}}</p>
-        <p> Unit price : {{$product->price}}</p><br>
+      
+       {{-- <p class="h-20 line-clamp-1 overflow-hidden">Description: {{$product->description}}</p>
+     --}}
+       <p class="text-lg font-bold"> Unit price : $ {{$product->price}}</p><br>
     
-
-        {{-- <br><br>
-        <form action="{{route('removeProduct',['product' => $product])}}">
-          @csrf
-          @method('DELETE')
-        <button type="submit">Remove From Cart</button>
-        </form> --}}
+      
       </div>
 
-    {{-- </fieldset> --}}
+    

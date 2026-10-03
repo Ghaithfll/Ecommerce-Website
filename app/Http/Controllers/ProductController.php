@@ -144,58 +144,60 @@ class ProductController extends Controller
         return view('payment', ['checkoutId' => $checkoutId, 'integrity' => $integrity]);
     }
 
-//     public function payment_result(Request $request)
-//     {
 
-//         try {
+    
+    public function payment_result(Request $request)
+    {
+
+        try {
             
-//             $checkoutId = $request['checkoutId'];
+            $checkoutId = $request['checkoutId'];
 
-
-            
-// //            $responseData = json_decode(requestHyperpayResult($checkoutId));
-
-            
-
-//             if ($responseData == null) {
-//                 //dd("Null Api response while requesting the payment result");
-//                 throw new Exception("Null Api response while requesting the payment result");
-//             }
 
             
-//             // verify the currency,amount,ID
+            $responseData = json_decode(requestHyperpayResult($checkoutId));
 
-//             $paymentStatus = ExtractPatmentStatus($responseData->result->code);
             
-//             // update the order status
+
+            if ($responseData == null) {
+                //dd("Null Api response while requesting the payment result");
+                throw new Exception("Null Api response while requesting the payment result");
+            }
+
+            
+            // verify the currency,amount,ID
+
+            $paymentStatus = ExtractPatmentStatus($responseData->result->code);
+            
+            // update the order status
            
-//             $order = session()->get('order');
+            $order = session()->get('order');
             
-//             $order = Order::findorFail($order['id']);
+            $order = Order::findorFail($order['id']);
             
-//             $order->status = $paymentStatus;
+            $order->status = $paymentStatus;
             
-//             $order->payment_id = $responseData->id;
+            $order->payment_id = $responseData->id;
 
-//             $order->save(); // should here store the order
+            $order->save(); // should here store the order
             
-//             session()->forget('order');
+            session()->forget('order');
             
            
 
-//             // drop the cart
+            // drop the cart
             
-//             return redirect()->route('orders');
-//         } catch (Exception $err) {
+            return redirect()->route('orders');
+        } catch (Exception $err) {
 
 
-//             Log::error('Payment Api Failed', ['error' => $err->getMessage()]);
-//             dd('Response Error,unexpected failed response!',$responseData,$order);            
+            Log::error('Payment Api Failed', ['error' => $err->getMessage()]);
+            dd('Response Error,unexpected failed response!',$responseData,$order);            
             
-//             return back()->withErrors(["error" => "we couldnt process your payment, please try again"]);
+            return back()->withErrors(["error" => "we couldnt process your payment, please try again"]);
 
-//             }
-//     }
+            }
+    }
     
 
 
@@ -203,104 +205,55 @@ class ProductController extends Controller
 
     }
 
-// function requestHyperpayCheckout($total)
-// {
 
-//     $url = "https://eu-test.oppwa.com/v1/checkouts";
-//     /*
-//     //dd(number_format($product->price,2));
-//     $data =
-//         "entityId=8a8294174d0595bb014d05d829cb01cd" . // ur merchant id
-//         "&amount=" . number_format($product->price, 2) .        //           the amount should be paid
-//         "&currency=EUR" .
-//         "&paymentType=DB" . //      debit pay: 'take the money from the customer'
-//         "&integrity=true"; //      "Perform integrity checks."
-
-
-//     $ch = curl_init();
-//     curl_setopt($ch, CURLOPT_URL, $url);
-//     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-//         'Authorization:Bearer OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o='
-//     ));
-//     curl_setopt($ch, CURLOPT_POST, 1);
-//     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-//     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // this should be set to true in production
-//     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-//     $responseData = curl_exec($ch);                  // now execute the cURL
-
-//     if (curl_errno($ch)) {
-//         return curl_error($ch);
-//     }
-//     curl_close($ch);
-//     */
-
-//     $responseData = Http::asForm()->withHeaders([
-//         'Authorization' => "Bearer OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o="
-//     ])->post($url, [
-//         'entityId' => '8a8294174d0595bb014d05d829cb01cd',
-//         'amount'   => number_format($total, 2),// total
-//         'currency' => 'EUR',
-//         'paymentType' => 'DB',
-//         'integrity' => true
-
-//     ]);
-
-//     if ($responseData->failed()) {
-//         $responseData->throw();
-//     }
+function requestHyperpayResult($checkoutId)
+{
+    $url = "https://eu-test.oppwa.com/v1/checkouts/$checkoutId/payment";
+    // $url .= "?entityId=8a8294174d0595bb014d05d829cb01cd";
+    /*
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Authorization:Bearer OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o='
+    ));
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // this should be set to true in production
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $responseData = curl_exec($ch);
+    if (curl_errno($ch)) {
+        return curl_error($ch);
+    }
+    curl_close($ch);*/
+    //****************************** */
+    $responseData = Http::withToken('OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o=')
+        ->withQueryParameters(['entityId' => '8a8294174d0595bb014d05d829cb01cd'])
+        ->get($url);
 
 
-//     return $responseData;
-// }
+    if ($responseData->failed()) {
+      //  dd($responseData->body(),'why is that?!');
+        $responseData->throw();
+    }
+    return $responseData->body();
+}
 
-// function requestHyperpayResult($checkoutId)
-// {
-//     $url = "https://eu-test.oppwa.com/v1/checkouts/$checkoutId/payment";
-//     // $url .= "?entityId=8a8294174d0595bb014d05d829cb01cd";
-//     /*
-//     $ch = curl_init();
-//     curl_setopt($ch, CURLOPT_URL, $url);
-//     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-//         'Authorization:Bearer OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o='
-//     ));
-//     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-//     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // this should be set to true in production
-//     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-//     $responseData = curl_exec($ch);
-//     if (curl_errno($ch)) {
-//         return curl_error($ch);
-//     }
-//     curl_close($ch);*/
-//     //****************************** */
-//     $responseData = Http::withToken('OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o=')
-//         ->withQueryParameters(['entityId' => '8a8294174d0595bb014d05d829cb01cd'])
-//         ->get($url);
+function ExtractPatmentStatus($statusCode)
+{
 
 
-//     if ($responseData->failed()) {
-//       //  dd($responseData->body(),'why is that?!');
-//         $responseData->throw();
-//     }
-//     return $responseData->body();
-// }
-
-// function ExtractPatmentStatus($statusCode)
-// {
-
-
-//     $successfulPattern = '/^(000.000.|000.100.1|000.[36]|000.400.[1][12]0)/';
-//     $pendingPattern = '/^(000\.200)/';
-//     $reviewPattern = '/^(000.400.0[^3]|000.400.100)/';
-//     if (preg_match($successfulPattern, $statusCode)) {
-//         return 'Paid';
-//     } elseif (preg_match($pendingPattern, $statusCode)) {
-//         return 'Pending';
-//     } elseif (preg_match($reviewPattern, $statusCode)) {
-//         return 'Review';
-//     } else {
-//         return 'Failed';
-//     }
-// }
+    $successfulPattern = '/^(000.000.|000.100.1|000.[36]|000.400.[1][12]0)/';
+    $pendingPattern = '/^(000\.200)/';
+    $reviewPattern = '/^(000.400.0[^3]|000.400.100)/';
+    if (preg_match($successfulPattern, $statusCode)) {
+        return 'Paid';
+    } elseif (preg_match($pendingPattern, $statusCode)) {
+        return 'Pending';
+    } elseif (preg_match($reviewPattern, $statusCode)) {
+        return 'Review';
+    } else {
+        return 'Failed';
+    }
+}
 
 
 // function AddProductToPivot($order, $product)

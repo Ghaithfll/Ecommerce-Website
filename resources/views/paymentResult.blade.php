@@ -1,17 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Payment result</title>
-</head>
-<body>
-<x-navbar/>
 
-    <h1>All Orders :</h1>
+<x-layouts.Layout >
 
-<table>
+    <h1 >All Orders :</h1>
+
+<table >
  <tr>
     <th>Order ID</th>
     <th>Customer_ID</th>
@@ -46,5 +38,4 @@
 
 
 
-</body>
-</html>
+</x-layouts.Layout>

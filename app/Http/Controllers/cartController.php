@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Http\Controllers\requestHyperpayCheckout;
 use App\Models\Order;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -16,17 +17,19 @@ use Illuminate\Support\Facades\Log;
 class cartController extends Controller
 {
     public function index(){
-        
-        $cart = Cart::where('user_id', 1)->get();
+        // #no 1
+        $user = Auth::user();
+        $cart = Cart::where('user_id', $user->id)->get();
+          
       //  $cart = [];
-        return view('cart',['cart' => $cart,'user' => User::findorFail(1)]);
+        return view('cart',['cart' => $cart,'user' => $user]);// #no 7
     }
     public function submit_checkout(Request $request){
-     
+     $user = Auth::user();
    
     try {
-            
-    $cart = Cart::where('user_id', 1)->get();
+     // #no 2       
+    $cart = Cart::where('user_id', $user->id)->get();
        
     //dd($request->all());
         // quantity_prod_Id , currency
@@ -40,10 +43,10 @@ class cartController extends Controller
        // dd(session()->get('order'));
         if ($order == null) {
                     
-            
+            // #no 3
             $order = Order::create([
                 'amount' => $total,// Total Price
-                'user_id' => 1,  //               user id is hardcoded
+                'user_id' => $user->id,  //               user id is hardcoded
                 'currency' => 'SAR',
                 'status' => 'pending'
             ]);
@@ -113,8 +116,9 @@ class cartController extends Controller
 
         public function removeProduct(Product $product){
          // get the cart
-        
-                $cart = Cart::where('user_id', 1)->get();
+         $user = Auth::user();
+            // #no 4
+                $cart = Cart::where('user_id', $user->id)->get();
                 
                 $model = $cart->firstWhere('product_id' , $product->id);
             // dd($model->product_id,$product->id);
@@ -133,7 +137,9 @@ class cartController extends Controller
         
         public function AddProduct(Product $product){
     // add product to cart
-    $cart = Cart::where('user_id',1)->get();// get the cart of this user
+    $user = Auth::user();
+    // #no 5
+    $cart = Cart::where('user_id',$user->id)->get();// get the cart of this user
     
     $isexist = false;
     foreach ($cart as $record) {
@@ -147,7 +153,7 @@ class cartController extends Controller
     }
     
     cart::create([
-        'user_id' => 1,
+        'user_id' => $user->id,// #no 6
         'product_id' => $product->id,
     ]);
     // redirect back    
@@ -164,12 +170,12 @@ function requestHyperpayCheckout($total)
 {
 
     $url = "https://eu-test.oppwa.com/v1/checkouts";
- 
+    
     $responseData = Http::asForm()->withHeaders([
         'Authorization' => "Bearer OGE4Mjk0MTc0ZDA1OTViYjAxNGQwNWQ4MjllNzAxZDF8bk49a3NvQ3ROZjJacW9nOWYla0o="
     ])->post($url, [
         'entityId' => '8a8294174d0595bb014d05d829cb01cd',
-        'amount'   => number_format($total, 2),// total
+        'amount'   => number_format($total, 2,'.',''),// total
         'currency' => 'EUR',
         'paymentType' => 'DB',
         'integrity' => true

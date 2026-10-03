@@ -25,3 +25,12 @@ new:
     what if an order was created and the user never paid (the order still in the db)
     
      should the order be deleted after some amount of time?
+
+
+
+
+
+add users
+admins
+edit, remove product
+edit remove categori
