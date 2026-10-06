@@ -21,9 +21,18 @@
     @endauth
     
     <x-navbar href="{{route('categories')}}">Home</x-navbar>
+   
+    @can('create_product')
     <x-navbar href="{{route('create-product')}}">Create Product</x-navbar>
+        
+    @endcan
     <x-navbar href="{{route('cart')}}">Cart</x-navbar>
+    
+    @can('create_product')
+    
     <x-navbar href="{{route('orders')}}">Orders Page</x-navbar>
+    
+    @endcan
     </nav>
     <div class="pt-35">
     {{$slot}}

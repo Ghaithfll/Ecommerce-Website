@@ -11,7 +11,9 @@ use App\Http\Requests\postRequestValidator;
 use App\Models\Category;
 use Error;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -30,18 +32,17 @@ class ProductController extends Controller
 
     public function create()
     {
-
+        Gate::authorize('create',Product::class);
         $categs = Category::all();
         return view('product.create',['categs' => $categs]);
     }
 
 
+
     public function store(postRequestValidator $request)
     {
 
-        // authorization
-        // validate data  Done by the header
-        // add product
+        
         $imgPath = null;
         if ($request->hasFile('image')) { //  there was a file submitted that bears the name 'image'
             $imgPath = $request->file('image') // Give me the uploaded file named image that was sent with the request (returns 'UploadedFile' obj not the img itself)
@@ -73,21 +74,20 @@ class ProductController extends Controller
         return redirect()->route('home'); // u may want to send some data
     }
 
-    /**
-     * Display the specified resource.
-     */
+    
     public function details(Product $product)
     {
         return view('product.details', ['product' => $product]);
     }
-    public function checkout(Product $product)
+
+  /*  public function checkout(Product $product)
     {
        
         $user = User::find(1);
         return view('checkout', ['product' => $product, 'user' => $user]);
     }
-
-
+*/
+/*
     public function checkout_submit(product $product)
     {
         try {
@@ -135,6 +135,7 @@ class ProductController extends Controller
 
 
     }
+    */
     public function payment_get(Request $request)
     {
 
@@ -187,7 +188,7 @@ class ProductController extends Controller
 
             // drop the cart
             
-            return redirect()->route('orders');
+            return redirect()->route('categories');
         } catch (Exception $err) {
 
 

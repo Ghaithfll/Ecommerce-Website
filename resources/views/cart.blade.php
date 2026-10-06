@@ -14,8 +14,8 @@
         </a>
     </div>
     </div>
+
     @else
-    
 
  <h2 class="text-3xl font-bold">Products in my cart :</h2>
     <br>

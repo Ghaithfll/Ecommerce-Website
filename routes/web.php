@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Http\Controllers\ProductController;
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/',[ProductController::class,'home'])->name('home');
@@ -33,6 +34,7 @@ Route::middleware('auth')->group(function(){
 
 
     Route::get('/orders',function(){
+        Gate::authorize('view_orders',Order::class);
         $orders = Order::all();
         return view('orders',['orders' => $orders]);
     })->name('orders');
@@ -40,7 +42,15 @@ Route::middleware('auth')->group(function(){
     
     Route::get('Logout',[AuthController::class,'Logout'])->name('Logout');
 
+    Route::get('categories/create',[CategoryController::class,'create'])->name('create_categ');
+    Route::post('categories/create',[CategoryController::class,'store']);
 
+    Route::get('categories/management',[CategoryController::class,'get_manage'])->name('management');
+
+    Route::get('categories/management/{categ}/edit',[CategoryController::class,'edit'])->name('edit_categ');
+    Route::patch('categories/management/{categ}/edit',[CategoryController::class,'update']);
+    Route::delete('categories/management/{categ}/edit',[CategoryController::class,'delete']);
+    
 });
 
 Route::get('/categories/{category}', [CategoryController::class,'show'])->name('category');
@@ -59,3 +69,9 @@ Route::middleware('guest')->group(function(){
 });
 
 //Route::get('test',[ProductController::class,'TestPivot'])->name('test');
+
+
+
+
+//    Edit / Delete / Products
+//    Edit / Delete / Categories 

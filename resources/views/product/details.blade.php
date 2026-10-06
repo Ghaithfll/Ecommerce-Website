@@ -13,6 +13,12 @@
 
     <div>
         <x-productui :product='$product'/>
+        @can('update', $post)
+            
+        @endcan
+        <button>Edit</button>
+        <button>Delete</button>
+    
     </div>
 
 

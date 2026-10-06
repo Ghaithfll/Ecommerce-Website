@@ -6,10 +6,19 @@
       <main class="w-full h-screen flex content-end justify-center items-center ">
         <div >
         <h1 class="text-2xl font-bold">No Products Added Yet</h1>    
-        <a href= "{{route('create-product')}}">
-        <button class="w-full bg-cyan-500 hover:bg-cyan-800 rounded font-bold text-white min-h-13 my-5">
-            Create Product</button>    
-        </a>
+       
+        @can('create_product')
+            <a href= "{{route('create-product')}}">
+                <button class="w-full bg-cyan-500 hover:bg-cyan-800 rounded font-bold text-white min-h-13 my-5">
+                    Create Product</button>    
+            </a>
+        @else
+            <a href= "{{route('categories')}}">
+                <button class="w-full bg-cyan-500 hover:bg-cyan-800 rounded font-bold text-white min-h-13 my-5">
+                    Go Back </button>    
+            </a>    
+        @endcan
+        
     </div>
 </main>  
 
