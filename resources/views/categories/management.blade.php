@@ -20,14 +20,8 @@
 
     @forelse ($categs as $categ)
     <div>
-        <x-category  :categ='$categ'/>  {{-- provide the link urself --}}
-        {{-- <a href="{{route('edit_categ',['categ' => $categ])}}">
-        <button type="submit">Edit</button>
-        </a>
-        <form action="" method="POST" id="edit_{{$categ->id}}">
-            @csrf @method('DELETE')
-        <button type="submit">Delete</button>
-        </form> --}}
+        <x-category href="{{route('edit_categ',['categ'=> $categ ])}}" :categ='$categ'/>  {{-- provide the link urself --}}
+        
     </div>
         
     @empty

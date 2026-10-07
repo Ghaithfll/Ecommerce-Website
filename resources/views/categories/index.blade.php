@@ -11,7 +11,7 @@
     
         @foreach ($categs as $categ)
           
-     <x-category  :categ='$categ'/> 
+     <x-category href="{{route('category',['category'=> $categ ])}}" :categ='$categ'/> 
    
  
         @endforeach

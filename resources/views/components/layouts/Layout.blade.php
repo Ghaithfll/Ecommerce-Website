@@ -8,7 +8,7 @@
     @vite(['resources/css/app.css'])
 </head>
 <body>
-    <nav class="flex justify-center gap-x-8 items-center min-h-15 bg-cyan-500 fixed  min-w-screen  text-white font-bold">
+    <nav class="flex justify-center gap-x-8 items-center min-h-15 bg-gradient-to-b from-cyan-500 to-cyan-700 fixed  min-w-screen  text-white font-bold">
     
         
     @auth
