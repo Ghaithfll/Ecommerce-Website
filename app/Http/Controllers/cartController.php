@@ -118,8 +118,8 @@ class cartController extends Controller
          // get the cart
          $user = Auth::user();
             // #no 4
-                $cart = Cart::where('user_id', $user->id)->get();
-                
+            $cart = $user->cart;
+        
                 $model = $cart->firstWhere('product_id' , $product->id);
             // dd($model->product_id,$product->id);
             

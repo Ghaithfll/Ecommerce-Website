@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Http\Controllers\ProductController;
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 
@@ -34,8 +35,8 @@ Route::middleware('auth')->group(function(){
 
 
     Route::get('/orders',function(){
-        Gate::authorize('view_orders',Order::class);
-        $orders = Order::all();
+        //Gate::authorize('view_orders',Order::class);
+        $orders = Order::where('user_id',Auth::id())->get();
         return view('orders',['orders' => $orders]);
     })->name('orders');
 

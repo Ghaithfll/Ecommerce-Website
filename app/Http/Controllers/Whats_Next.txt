@@ -1,0 +1,15 @@
+DOM
+xhrHttpRequest
+call stack loop
+async
+promiss
+
+////
+
+job
+queue
+API
+
+
+
+problem solving

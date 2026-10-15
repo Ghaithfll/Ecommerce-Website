@@ -156,7 +156,7 @@ class ProductController extends Controller
 
 
             
-            $responseData = json_decode(requestHyperpayResult($checkoutId));
+            $responseData = (requestHyperpayResult($checkoutId));
 
             
 
@@ -235,7 +235,7 @@ function requestHyperpayResult($checkoutId)
       //  dd($responseData->body(),'why is that?!');
         $responseData->throw();
     }
-    return $responseData->body();
+    return $responseData->json();
 }
 
 function ExtractPatmentStatus($statusCode)

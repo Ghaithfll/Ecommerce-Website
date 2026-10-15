@@ -34,3 +34,22 @@ add users
 admins
 edit, remove product
 edit remove categori
+
+1
+what happens to deleted categories? de-activated? what happens to their products
+ products->belongsTo->category
+ order->hasMany->products
+ 
+ products -> de-activated    to protect FKs
+
+2
+How mauch do u rate the website?  ( ) / 10  ?
+
+3
+recommended modifications
+
+4
+management navigator location?
+management pages design
+
+Estimated time for the rest 

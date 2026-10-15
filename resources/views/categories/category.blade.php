@@ -25,7 +25,7 @@
 @else
     <main class="">
         <div class="flex place-content-center w-full">
-    <aside class="grid grid-cols-2 gap-9  w-fit h-fit ">
+    <aside class="grid grid-cols-3 gap-9  w-fit h-fit ">
     @foreach ($products as $product)
         
            

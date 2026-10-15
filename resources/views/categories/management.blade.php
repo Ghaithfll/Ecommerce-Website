@@ -16,7 +16,12 @@
 <h1 class="text-3xl  font-bold col-span-2 flex justify-center pb-10">Categories Management</h1>
 
  
-
+    <a href="{{route('create_categ')}}" >
+    <div class="border rounded-xl h-52 w-52 justify-center items-center flex text-lg text-white font-bold bg-amber-500 hover:bg-amber-700">
+        New Category
+   
+    </div>
+    </a> 
 
     @forelse ($categs as $categ)
     <div>
